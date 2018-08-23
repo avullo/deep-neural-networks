@@ -1,4 +1,4 @@
-from deepnn.core import initialize_parameters, linear_forward
+from deepnn.core import initialize_parameters, linear_forward, linear_activation_forward
 
 import unittest
 import numpy as np
@@ -37,14 +37,35 @@ class TestCore(unittest.TestCase):
 
     def test_linear_forward(self):
         np.random.seed(1)
+        # TODO
+        # make this general, shared with the following test case
         A_prev = np.random.randn(3,2)
         W = np.random.randn(1,3)
         b = np.random.randn(1,1)
-
+        ###
+        
         Z, linear_cache = linear_forward(A_prev, W, b)
         try:
             np.testing.assert_allclose(Z, [[ 3.26295337, -1.23429987]], rtol=1e-5)
         except AssertionError:
             self.fail("Failed linear_forward")
 
+    def test_linear_activation_forward(self):
+        np.random.seed(2)
+        A_prev = np.random.randn(3,2)
+        W = np.random.randn(1,3)
+        b = np.random.randn(1,1)
+
+        A, linear_activation_cache = linear_activation_forward(A_prev, W, b, activation = "sigmoid")
+        try:
+            np.testing.assert_allclose(A, [[ 0.96890023, 0.11013289 ]], rtol=1e-5)
+        except AssertionError:
+            self.fail("Failed linear_activation_forward with sigmoid")
+
+        A, linear_activation_cache = linear_activation_forward(A_prev, W, b, activation = "relu")
+        try:
+            np.testing.assert_allclose(A, [[ 3.43896131, 0. ]], rtol=1e-5)
+        except AssertionError:
+            self.fail("Failed linear_activation_forward with ReLU")
         
+            
