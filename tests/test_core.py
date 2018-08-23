@@ -1,4 +1,4 @@
-from deepnn.core import initialize_parameters
+from deepnn.core import initialize_parameters, linear_forward
 
 import unittest
 import numpy as np
@@ -34,4 +34,17 @@ class TestCore(unittest.TestCase):
             np.testing.assert_array_equal(parameters["b2"], [[0.], [0.], [0.]])
         except AssertionError:
             self.fail("Failed initialize_parameters b2")
+
+    def test_linear_forward(self):
+        np.random.seed(1)
+        A_prev = np.random.randn(3,2)
+        W = np.random.randn(1,3)
+        b = np.random.randn(1,1)
+
+        Z, linear_cache = linear_forward(A_prev, W, b)
+        try:
+            np.testing.assert_allclose(Z, [[ 3.26295337, -1.23429987]], rtol=1e-5)
+        except AssertionError:
+            self.fail("Failed linear_forward")
+
         
