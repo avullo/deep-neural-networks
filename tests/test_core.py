@@ -1,4 +1,4 @@
-from deepnn.core import initialize_parameters, linear_forward, linear_activation_forward
+from deepnn.core import * 
 
 import unittest
 import numpy as np
@@ -67,5 +67,31 @@ class TestCore(unittest.TestCase):
             np.testing.assert_allclose(A, [[ 3.43896131, 0. ]], rtol=1e-5)
         except AssertionError:
             self.fail("Failed linear_activation_forward with ReLU")
+
+    def test_L_model_forward(self):
+        np.random.seed(6)
+        X = np.random.randn(5,4)
+        W1 = np.random.randn(4,5)
+        b1 = np.random.randn(4,1)
+        W2 = np.random.randn(3,4)
+        b2 = np.random.randn(3,1)
+        W3 = np.random.randn(1,3)
+        b3 = np.random.randn(1,1)
+  
+        parameters = {"W1": W1,
+                      "b1": b1,
+                      "W2": W2,
+                      "b2": b2,
+                      "W3": W3,
+                      "b3": b3}
+
+        AL, caches = L_model_forward(X, parameters)
+        try:
+            np.testing.assert_allclose(AL, [[ 0.03921668, 0.70498921, 0.19734387, 0.04728177]], rtol=1e-5)
+        except AssertionError:
+            self.fail("Failed L_model_forward with AL")
+
+        self.assertEqual(len(caches), 3)
+    
         
             
