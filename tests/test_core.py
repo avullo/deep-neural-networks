@@ -1,4 +1,4 @@
-from deepnn.core import * 
+from deepnn.core import *
 
 import unittest
 import numpy as np
@@ -93,5 +93,32 @@ class TestCore(unittest.TestCase):
 
         self.assertEqual(len(caches), 3)
     
-        
-            
+    def test_cross_entropy(self):
+        Y = np.asarray([[1, 1, 1]])
+        aL = np.array([[.8,.9,0.4]])
+
+        self.assertTrue(abs(cross_entropy_cost(aL, Y) - 0.41493159961539694) <= 1e-3)
+
+    def test_linear_backward(self):
+        np.random.seed(1)
+        dZ = np.random.randn(1,2)
+        A_prev = np.random.randn(3,2)
+        W = np.random.randn(1,3)
+        b = np.random.randn(1,1)
+        linear_cache = (A_prev, W, b)
+
+        dA_prev, dW, db = linear_backward(dZ, linear_cache)
+        try:
+            np.testing.assert_allclose(dA_prev, [[ 0.51822968, -0.19517421], [-0.40506361, 0.15255393], [ 2.37496825, -0.89445391]], rtol=1e-5)
+        except AssertionError:
+            self.fail("Failed linear_backward with dA_prev")
+
+        try:
+            np.testing.assert_allclose(dW, [[-0.10076895, 1.40685096, 1.64992505]] , rtol=1e-5)
+        except AssertionError:
+            self.fail("Failed linear_backward with dW")
+
+        try:
+            np.testing.assert_allclose(db, [[ 0.50629448]], rtol=1e-5)
+        except AssertionError:
+            self.fail("Failed linear_backward with db")
