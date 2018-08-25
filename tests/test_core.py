@@ -8,7 +8,7 @@ class TestCore(unittest.TestCase):
     def test_initialization(self):
         np.random.seed(3)
 
-        parameters = initialize_parameters([5,4,3])
+        parameters = initialize_parameters([5,4,3], seed = 3)
         try:
             np.testing.assert_allclose(parameters["W1"],
                                        [[ 0.01788628, 0.0043651, 0.00096497, -0.01863493, -0.00277388],

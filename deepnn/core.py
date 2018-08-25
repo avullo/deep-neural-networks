@@ -2,7 +2,7 @@ import numpy as np
 
 from .activation_functions import sigmoid, sigmoid_backward, relu, relu_backward 
 
-def initialize_parameters(layer_dims):
+def initialize_parameters(layer_dims, seed = 1):
     """
     Arguments:
       layer_dims -- python array (list) containing the dimensions of each layer in our network
@@ -14,7 +14,7 @@ def initialize_parameters(layer_dims):
     """
 
     # TODO: initalize random seed
-    np.random.seed(3)
+    np.random.seed(seed)
     parameters = {}
     L = len(layer_dims) # number of layers in the network
 
