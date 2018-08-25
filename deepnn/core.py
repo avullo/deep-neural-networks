@@ -27,24 +27,24 @@ def initialize_parameters(layer_dims):
         
     return parameters
 
-def linear_forward(A, W, b):
+def linear_forward(A_prev, W, b):
     """
     Implement the linear part of a layer's forward propagation.
 
     Arguments:
-      A -- activations from previous layer (or input data): (size of previous layer, number of examples)
-      W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
-      b -- bias vector, numpy array of shape (size of the current layer, 1)
+      A_prev -- activations from previous layer (or input data): (size of previous layer, number of examples)
+      W      -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
+      b      -- bias vector, numpy array of shape (size of the current layer, 1)
 
     Returns:
       Z     -- the input of the activation function, also called pre-activation parameter 
       cache -- a python dictionary containing "A", "W" and "b" ; stored for computing the backward pass efficiently
     """
     
-    Z = np.dot(W, A) + b
+    Z = np.dot(W, A_prev) + b
         
-    assert(Z.shape == (W.shape[0], A.shape[1]))
-    cache = (A, W, b)
+    assert(Z.shape == (W.shape[0], A_prev.shape[1]))
+    cache = (A_prev, W, b)
     
     return Z, cache
 
@@ -185,3 +185,45 @@ def linear_activation_backward(dA, cache, activation):
         dA_prev, dW, db = linear_backward(dZ, linear_cache)
     
     return dA_prev, dW, db
+
+def L_model_backward(AL, Y, caches):
+    """
+    Implement the backward propagation for the [LINEAR->RELU] * (L-1) -> LINEAR -> SIGMOID group
+    
+    Arguments:
+      AL     -- probability vector, output of the forward propagation (L_model_forward())
+      Y      -- true "label" vector (containing 0 if false class, 1 otherwise)
+      caches -- list of caches containing:
+                every cache of linear_activation_forward() with "relu" (it's caches[l], for l in range(L-1) i.e l = 0...L-2)
+                the cache of linear_activation_forward() with "sigmoid" (it's caches[L-1])
+    
+    Returns:
+      grads -- A dictionary with the gradients
+               grads["dA" + str(l)] = ... 
+               grads["dW" + str(l+1)] = ...
+               grads["db" + str(l+1)] = ... 
+    """
+    grads = {}
+    L = len(caches) # the number of layers
+    m = AL.shape[1]
+    Y = Y.reshape(AL.shape)
+    
+    # Initializing the backpropagation
+    # TODO: make it generic depending on the cost function
+    dAL = - (np.divide(Y, AL) - np.divide(1-Y, 1-AL))
+    
+    # Lth layer (SIGMOID -> LINEAR) gradients. Inputs: "dAL, current_cache". Outputs: "grads["dAL-1"], grads["dWL"], grads["dbL"]
+    current_cache = caches[L-1]
+    grads["dA" + str(L-1)], grads["dW" + str(L)], grads["db" + str(L)] = linear_activation_backward(dAL, current_cache, activation="sigmoid")
+    
+    # Reverse loop through the previous layers
+    for l in reversed(range(L-1)):
+        # lth layer: (RELU -> LINEAR) gradients.
+        # Inputs: "grads["dA" + str(l + 1)], current_cache". Outputs: "grads["dA" + str(l)] , grads["dW" + str(l + 1)] , grads["db" + str(l + 1)] 
+        current_cache = caches[l]
+        dA_prev_temp, dW_temp, db_temp = linear_activation_backward(grads["dA"+str(l+1)], current_cache, activation="relu")
+        grads["dA" + str(l)] = dA_prev_temp
+        grads["dW" + str(l + 1)] = dW_temp
+        grads["db" + str(l + 1)] = db_temp
+
+    return grads

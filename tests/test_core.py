@@ -2,6 +2,7 @@ from deepnn.core import *
 
 import unittest
 import numpy as np
+import pprint
 
 class TestCore(unittest.TestCase):
     def test_initialization(self):
@@ -149,5 +150,32 @@ class TestCore(unittest.TestCase):
             np.testing.assert_allclose(db, [[-0.20837892]], rtol=1e-5)
         except AssertionError:
             self.fail("Failed linear_activation_backward with ReLU")
-        
-            
+
+    def test_L_model_backward(self):
+        np.random.seed(3)
+        AL = np.random.randn(1, 2)
+        Y = np.array([[1, 0]])
+
+        A0 = np.random.randn(4,2)
+        W1 = np.random.randn(3,4)
+        b1 = np.random.randn(3,1)
+        Z1 = np.random.randn(3,2)
+        linear_activation_cache_1 = ((A0, W1, b1), Z1)
+
+        A1 = np.random.randn(3,2)
+        W2 = np.random.randn(1,3)
+        b2 = np.random.randn(1,1)
+        Z2 = np.random.randn(1,2)
+        linear_activation_cache_2 = ((A1, W2, b2), Z2)
+
+        caches = (linear_activation_cache_1, linear_activation_cache_2)
+
+        grads = L_model_backward(AL, Y, caches)
+        try:
+            np.testing.assert_allclose(grads["dA1"], [[ 0.12913162, -0.44014127], [-0.14175655, 0.48317296], [ 0.01663708, -0.05670698]], rtol=1e-5)
+            np.testing.assert_allclose(grads["dW1"], [[ 0.41010002, 0.07807203, 0.13798444, 0.10502167],
+                                                      [ 0., 0., 0., 0. ],
+                                                      [ 0.05283652, 0.01005865, 0.01777766, 0.0135308 ]], rtol=1e-5)
+            np.testing.assert_allclose(grads["db1"], [[-0.22007063], [ 0. ], [-0.02835349]] , rtol=1e-5)
+        except AssertionError:
+            self.fail("Failed L_model_backward")
