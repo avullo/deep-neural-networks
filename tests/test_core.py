@@ -122,3 +122,32 @@ class TestCore(unittest.TestCase):
             np.testing.assert_allclose(db, [[ 0.50629448]], rtol=1e-5)
         except AssertionError:
             self.fail("Failed linear_backward with db")
+
+    def test_linear_activation_backward(self):
+        np.random.seed(2)
+        dA = np.random.randn(1,2)
+        A_prev = np.random.randn(3,2)
+        W = np.random.randn(1,3)
+        b = np.random.randn(1,1)
+        Z = np.random.randn(1,2)
+        linear_cache = (A_prev, W, b)
+        activation_cache = Z
+        linear_activation_cache = (linear_cache, activation_cache)
+
+        dA_prev, dW, db = linear_activation_backward(dA, linear_activation_cache, activation = "sigmoid")
+        try:
+            np.testing.assert_allclose(dA_prev, [[ 0.11017994, 0.01105339], [ 0.09466817, 0.00949723], [-0.05743092, -0.00576154]], rtol=1e-5)
+            np.testing.assert_allclose(dW, [[ 0.10266786, 0.09778551, -0.01968084]], rtol=1e-5)
+            np.testing.assert_allclose(db, [[-0.05729622]], rtol=1e-5)
+        except AssertionError:
+            self.fail("Failed linear_activation_backward with sigmoid")
+
+        dA_prev, dW, db = linear_activation_backward(dA, linear_activation_cache, activation = "relu")
+        try:
+            np.testing.assert_allclose(dA_prev, [[ 0.44090989, 0. ], [ 0.37883606, 0. ], [-0.2298228, 0. ]], rtol=1e-5)
+            np.testing.assert_allclose(dW, [[ 0.44513824, 0.37371418, -0.10478989]], rtol=1e-5)
+            np.testing.assert_allclose(db, [[-0.20837892]], rtol=1e-5)
+        except AssertionError:
+            self.fail("Failed linear_activation_backward with ReLU")
+        
+            
