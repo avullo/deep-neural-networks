@@ -1,0 +1,8 @@
+- model test function
+- cat vs other problem
+ - options to train/test with logistic regression, 2-layer and 4-layer networks
+- various initialisations: pure random, He (ReLU), Xavier (tanh)
+- regularization: L2, drop-out
+- gradient checking
+- object-oriented version
+- extend to multi-class and regression problems
