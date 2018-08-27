@@ -56,7 +56,7 @@ class NeuralNetwork:
         
         W, b = self.W, self.b
         for l in range(1, L+1):
-            W[l] = np.random.randn(layer_dims[l], layer_dims[l-1]) * .01
+            W[l] = np.random.randn(layer_dims[l], layer_dims[l-1]) / np.sqrt(layer_dims[l-1])
             b[l] = np.zeros((layer_dims[l], 1))
 
             assert(W[l].shape == (layer_dims[l], layer_dims[l-1]))
@@ -73,7 +73,7 @@ class NeuralNetwork:
           X -- data, numpy array of shape (input size, number of examples)
             
         Returns:
-          AL     -- last post-activation value
+          AL -- last post-activation value (network output)
         """
 
         self.caches = []
