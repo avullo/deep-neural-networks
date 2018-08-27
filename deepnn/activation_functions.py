@@ -9,13 +9,11 @@ def sigmoid(Z):
     
     Returns:
       A     -- output of sigmoid(z), same shape as Z
-      cache -- returns Z as well, useful during backpropagation
     """
     
     A = 1/(1+np.exp(-Z))
-    cache = Z
     
-    return A, cache
+    return A
 
 def sigmoid_backward(dA, cache):
     """
@@ -47,15 +45,12 @@ def relu(Z):
 
     Returns:
       A     -- Post-activation parameter, of the same shape as Z
-      cache -- a python dictionary containing "A" ; stored for computing the backward pass efficiently
     """
     
     A = np.maximum(0,Z)
-    
     assert(A.shape == Z.shape)
     
-    cache = Z 
-    return A, cache
+    return A
 
 def relu_backward(dA, cache):
     """
