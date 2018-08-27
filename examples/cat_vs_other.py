@@ -6,7 +6,7 @@ import os
 import numpy as np
 import h5py
 
-from deepnn.model import L_model_forward, train #, test
+from deepnn.model import train #, test
 
 def load_data():
     # data sets size is (m, num_px, num_px, 3) where 3 is for the 3 RGB channels
@@ -37,21 +37,21 @@ def load_data():
     
     return ( { 'x': train_x, 'y': train_y }, { 'x': test_x, 'y': test_y } )
 
-def predict(X, parameters):
+def predict(X, model):
     """
     Predict the results of a  L-layer neural network.
     
     Arguments:
-      X -- data set of examples you would like to label
-      parameters -- parameters of the trained model
+      X     -- data set of examples you would like to label
+      model -- trained network model
     
     Returns:
       outputs -- predictions for the given dataset X
     """
 
     # forward propagation
-    outputs, caches = L_model_forward(X, parameters)
-
+    outputs = model.L_model_forward(X)
+        
     return outputs
 
 def accuracy(probs, y):
@@ -76,16 +76,16 @@ if __name__ == '__main__':
     # - no hyper-parameters search
     #
     layers_dims = [ train_set["x"].shape[0], 20, 7, 5, 1 ]
-    parameters, costs = train(train_set["x"], train_set["y"], layers_dims, num_iterations = 2500, print_cost = True)
+    model, costs = train(train_set["x"], train_set["y"], layers_dims, num_iterations = 2500, print_cost = True)
 
     #
     # compute accuracy on the training/test set
     #
     # binary classification with sigmoid: outputs are probabilities
-    train_probs = predict(train_set["x"], parameters)
+    train_probs = predict(train_set["x"], model)
     print("Accuracy: {0:.2f} (training set)".format(accuracy(train_probs, train_set["y"])))
 
-    test_probs  = predict(test_set["x"], parameters)
+    test_probs  = predict(test_set["x"], model)
     print("Accuracy: {0:.2f} (test set)".format(accuracy(test_probs, test_set["y"])))
     
     

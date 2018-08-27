@@ -1,8 +1,8 @@
-from .core import initialize_parameters, L_model_forward, cross_entropy_cost, L_model_backward, update_parameters
+from .core import *
 
 def train(X, Y, layers_dims, seed = 1, learning_rate = 0.0075, num_iterations = 3000, print_cost=False):
     """
-    Implements a L-layer neural network: [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID.
+    Train an L-layer neural network: [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID.
     
     Arguments:
       X              -- data, numpy array of shape (input_dim, number of examples)
@@ -13,32 +13,32 @@ def train(X, Y, layers_dims, seed = 1, learning_rate = 0.0075, num_iterations = 
       print_cost     -- if True, it prints the cost every 100 steps
     
     Returns:
-      parameters -- parameters learnt by the model. They can then be used to predict.
-      costs      -- list of cost values, one every 100 iterations
+      nnet  -- trained neural network model
+      costs -- list of cost values, one every 100 iterations
     """
 
     costs = []
-    
-    # Parameters initialization
-    parameters = initialize_parameters(layers_dims, seed)
+
+    # Init network
+    nnet = NeuralNetwork(layers_dims, seed)
     
     # Loop (gradient descent)
     for i in range(0, num_iterations):
         # Forward propagation: [LINEAR -> RELU]*(L-1) -> LINEAR -> SIGMOID.
-        AL, caches = L_model_forward(X, parameters)
+        AL = nnet.L_model_forward(X)
         
         # Compute cost.
         cost = cross_entropy_cost(AL, Y)
     
         # Backward propagation.
-        grads = L_model_backward(AL, Y, caches)
+        nnet.L_model_backward(AL, Y)
  
         # Update parameters.
-        parameters = update_parameters(parameters, grads, learning_rate)
+        nnet.update_parameters(learning_rate)
                 
         # Print the cost every 100 training example
         if print_cost and i % 100 == 0:
             print ("Cost after iteration %i: %f" %(i, cost))
             costs.append(cost)
 
-    return parameters, costs
+    return nnet, costs
